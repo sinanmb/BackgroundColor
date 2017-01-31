@@ -1,20 +1,24 @@
 
-var interval = 1000;
-var colorUsedList = [];
-
-var changingColors = window.setInterval(changeBackgroundColor, interval);
 
 function changeBackgroundColor(){
+    var hexValues = '0123456789abcdef';
     var colorCode;
     do {
-        colorCode = Math.floor(Math.random() * 1000000 + 1);
+        colorCode = hexValues.split('').map(function(v, i, a){
+            return i > 5 ? null : a[Math.floor(Math.random() * 16)]
+        }).join('');
     }
-    while (colorUsedList.indexOf(colorCode) >= 0);
+    while (this.colorUsedList.indexOf(colorCode) >= 0);
     
     document.body.style.background = "#"+colorCode;
-    colorUsedList.push(colorCode);
-    
-    if (colorUsedList.length == 10) {
-        clearInterval(changingColors);
-    }
+    this.colorUsedList.push(colorCode);
 }
+
+function startColorChange (interval, duration) {
+    this.colorUsedList = [];
+    this.changeBackgroundColor = changeBackgroundColor.bind(this);
+    var changingColors = window.setInterval(this.changeBackgroundColor, interval);
+    setTimeout(clearInterval.bind(null, changingColors), duration)
+}
+
+startColorChange(1000, 10500);
